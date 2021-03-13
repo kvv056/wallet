@@ -40,12 +40,34 @@ class User extends Authenticatable
 //        'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
+	/**
+     * Get the wallets for the user.
      */
-//    protected $casts = [
-//        'email_verified_at' => 'datetime',
-//    ];
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+	
+	public function dd($param)
+	{
+		dd($this);
+	}
+	
+	/*
+DB::transaction(function () use ($bar) {
+    $master = new  Master();
+    $master->foo = $bar;
+
+    $items = [];
+    foreach ($myArray as $var) {
+        $item = new  Item();
+        $item->someField =  $field;
+
+        $items[] = $item;
+    }
+
+    $master->save();
+    $master->items()->saveMany($items);
+});
+	 */
 }
