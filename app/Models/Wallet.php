@@ -21,28 +21,35 @@ class Wallet extends Model
      * @var array
      */
     protected $fillable = [
-//        'user_id',
-		
         'balance',
-//        'created_at',
     ];
 	
 	/**
-     * Get the wallets for the user.
+     * Get the user for the wallet.
      */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 	
-	/*
-	$table->increments('id');
+	/**
+     * Get the deposit for the wallet.
+     */
+    public function deposits()
+    {
+        return $this->hasMany(Deposit::class);
+    }
 	
-	$table->unsignedInteger('user_id')->references('id')->on('users')->onDelete('cascade');
-	
-	$table->double('balance', 10, 0);
-    $table->timestamp('created_at');
-	 * 
-	 */
-	
+	public function getCreateTransaction($amount){
+		$transaction = new Transaction([
+			'user_id' => $this->user_id,
+			'wallet_id' => $this->id,
+			'deposit_id' =>null,
+			'amount' =>$amount,
+			'type' => 'enter',
+		]);
+		
+		return $transaction;
+	}
+
 }

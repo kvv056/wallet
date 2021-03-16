@@ -23,23 +23,18 @@ class Transaction extends Model
     protected $fillable = [
         'user_id',
         'wallet_id',
-        'depoit_id',
+        'deposit_id',
 		
 		'amount',
 		'type',
 		'created_at',
     ];
-	/*
-	$table->increments('id');
-			
-	$table->unsignedInteger('user_id')->references('id')->on('users')->onDelete('cascade');
-	$table->unsignedInteger('wallet_id')->references('id')->on('wallets')->onDelete('cascade');
-	$table->unsignedInteger('depoit_id')->references('id')->on('deposits')->onDelete('cascade');
 	
-	$table->double('amount', 10, 0);
-	$table->string('type', 30);
-	
-	$table->timestamp('created_at');
-	 * 
-	 */
+	/**
+     * Get the deposit for the transactions.
+     */
+    public function deposit()
+    {
+        return $this->belongsTo(Deposit::class);
+    }
 }

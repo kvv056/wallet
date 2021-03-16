@@ -37,7 +37,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-//        'remember_token',
     ];
 
 	/**
@@ -48,26 +47,12 @@ class User extends Authenticatable
         return $this->hasOne(Wallet::class);
     }
 	
-	public function dd($param)
-	{
-		dd($this);
-	}
-	
-	/*
-DB::transaction(function () use ($bar) {
-    $master = new  Master();
-    $master->foo = $bar;
-
-    $items = [];
-    foreach ($myArray as $var) {
-        $item = new  Item();
-        $item->someField =  $field;
-
-        $items[] = $item;
+	/**
+     * Get the wallets for the user.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
-
-    $master->save();
-    $master->items()->saveMany($items);
-});
-	 */
+	
 }

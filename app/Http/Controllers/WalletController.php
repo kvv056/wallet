@@ -3,49 +3,31 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AmountPostRequest;
+use DB;
 
 class WalletController extends Controller
 {
-    /**
-     * Display a listing of the resource.
+	/**
+     * Create a new controller instance.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function index()
+    public function __construct()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        $this->middleware('auth');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showBalance()
     {
-        //
+        $user = Auth::user();
+        return view('wallet', ['user'=>$user]);
     }
 
     /**
@@ -54,9 +36,10 @@ class WalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editBalance()
     {
-        //
+		$user = Auth::user();
+        return view('editBalance', ['user'=>$user]);
     }
 
     /**
@@ -66,19 +49,31 @@ class WalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateBalance(AmountPostRequest $request)
     {
-        //
+//		$user = Auth::user();
+		$amount = $request->validated()['amount'];
+		$wallet = Auth::user()->wallet;
+		$wallet->balance += $amount;
+		try{
+
+            DB::beginTransaction();
+			//enter
+            $wallet->save();
+			$transaction = $wallet->getCreateTransaction($amount);
+			$transaction->save();
+			
+            DB::commit();
+
+        } catch(\Exception $exception){
+
+            DB::rollBack();
+
+            throw $exception;
+        }
+
+		return redirect()->route('showBalance');
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

@@ -24,6 +24,6 @@ class HomeController extends Controller
     public function index()
     {
 		$user = '';
-        return view('home', ['user'->$user]);
+        return view('home', ['user'=>$user]);
     }
 }

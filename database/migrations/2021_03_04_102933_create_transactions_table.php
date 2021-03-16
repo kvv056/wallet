@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
 			
 			$table->unsignedInteger('user_id')->references('id')->on('users')->onDelete('cascade');
 			$table->unsignedInteger('wallet_id')->references('id')->on('wallets')->onDelete('cascade');
-			$table->unsignedInteger('depoit_id')->references('id')->on('deposits')->onDelete('cascade');
+			$table->unsignedInteger('deposit_id')->references('id')->on('deposits')->nullable()->onDelete('cascade');
 			
 			$table->double('amount', 10, 0);
 			$table->string('type', 30);
