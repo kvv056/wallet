@@ -37,4 +37,20 @@ class Transaction extends Model
     {
         return $this->belongsTo(Deposit::class);
     }
+	
+	/**
+     * Get the user for the transactions.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+	
+	/**
+     * Get the deposit for the transactions.
+     */
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class);
+    }
 }

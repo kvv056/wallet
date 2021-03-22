@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\AmountPostRequest;
-use DB;
+use App\Http\Requests\TopUpPostRequest;
+use App\Domain\WalletService;
+
 
 class WalletController extends Controller
 {
+	private $walletService;
 	/**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(WalletService $walletService)
     {
+		$this->walletService = $walletService;
         $this->middleware('auth');
     }
 
@@ -33,7 +36,6 @@ class WalletController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function editBalance()
@@ -45,35 +47,20 @@ class WalletController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\TopUpPostRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateBalance(AmountPostRequest $request)
+    public function updateBalance(TopUpPostRequest $request)
     {
-//		$user = Auth::user();
 		$amount = $request->validated()['amount'];
 		$wallet = Auth::user()->wallet;
-		$wallet->balance += $amount;
+		
 		try{
-
-            DB::beginTransaction();
-			//enter
-            $wallet->save();
-			$transaction = $wallet->getCreateTransaction($amount);
-			$transaction->save();
-			
-            DB::commit();
-
-        } catch(\Exception $exception){
-
-            DB::rollBack();
-
-            throw $exception;
-        }
-
+			$this->walletService->updateBalance($wallet, $amount);
+		} catch (Exception $ex) {
+			\Session::flash('flash_error', 'updating balance error');
+		}
 		return redirect()->route('showBalance');
-
     }
 
 }

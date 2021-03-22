@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Deposit;
+use App\Domain\DepositService;
 //use App\Models\Transaction;
 //use DB;
 
@@ -22,14 +22,16 @@ class AddDepositPercent extends Command
      * @var string
      */
     protected $description = 'Command description';
-
+	
+	private $depositService;
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(DepositService $depositService)
     {
+		$this->depositService = $depositService;
         parent::__construct();
     }
 
@@ -40,11 +42,7 @@ class AddDepositPercent extends Command
      */
     public function handle()
     {
-		$deposits = Deposit::where('active', 1)->get();
-		
-		foreach ($deposits as $deposit){
-			$deposit->createAccrueTransaction();
-		}
+		$this->depositService->accrueDeposits();
 
         return 0;
     }

@@ -38,6 +38,41 @@ class Deposit extends Model
 		'created_at',
     ];
 	
+	public function isAccrueAllow()
+	{
+		return $this->accrue_times < $this->maxAccrueTimes;
+	}
+	
+	public function getAccrueAmount()
+	{
+		return ($this->invested / 100) * $this->percentPerStep;
+	}
+	
+	public function accrue()
+	{
+		$this->percent += $this->getAccrueAmount();
+		$this->accrue_times ++;
+	}
+	
+	public function close()
+	{
+		$this->active = 0;
+	}
+	/**
+     * Get the user for the deposit.
+     */	
+	public function user()
+	{
+		return $this->belongsTo(User::class);
+	}
+	/**
+     * Get the wallet for the deposit.
+     */
+	public function wallet()
+	{
+		return $this->belongsTo(Wallet::class);
+	}
+	
 	/**
      * Get the transactions for the deposit.
      */
@@ -45,83 +80,4 @@ class Deposit extends Model
     {
         return $this->hasMany(Transaction::class);
     }
-	
-	public function isNewTransactionAllow()
-	{
-		return $this->accrue_times < 10;
-	}
-	
-	public function getTransactionsAmount()
-	{
-		return ($this->invested / 100) * $this->percentPerStep;
-	}
-	
-	public function getCreateTransaction($amount)
-	{
-		$transaction = new Transaction([
-			'user_id' => $this->user_id,
-			'wallet_id' => $this->wallet_id,
-			'deposit_id' =>$this->id,
-			'amount' =>$amount,
-			'type' => 'create_deposit',
-		]);
-		
-		return $transaction;
-	}
-	
-	public function createAccrueTransaction()
-	{
-		try{
-            DB::beginTransaction();
-			
-			$this->addPercent();
-			
-			if(!$this->isNewTransactionAllow()){		
-				$this->close();
-				
-			}
-			
-			$this->save();
-			
-            DB::commit();
-
-        } catch(\Exception $exception){
-
-            DB::rollBack();
-
-            throw $exception;
-        }
-	}
-	
-	private function addPercent()
-	{
-		$this->transactions()->create(
-			[
-				'user_id' => $this->user_id,
-				'wallet_id' => $this->wallet_id,
-				'deposit_id' =>$this->id,
-				'amount' =>$this->getTransactionsAmount(),
-				'type' => 'accrue',
-			]
-		);
-		
-		$this->percent += $this->getTransactionsAmount();
-		$this->accrue_times ++;
-	}
-	
-	private function close()
-	{
-		echo 'weew';
-			$this->active = 0;
-			$this->transactions()->create(
-				[
-					'user_id' => $this->user_id,
-					'wallet_id' => $this->wallet_id,
-					'deposit_id' =>$this->id,
-					'amount' =>0,
-					'type' => 'close_deposit',
-				]
-			);
-	}
-
 }

@@ -40,16 +40,12 @@ class Wallet extends Model
         return $this->hasMany(Deposit::class);
     }
 	
-	public function getCreateTransaction($amount){
-		$transaction = new Transaction([
-			'user_id' => $this->user_id,
-			'wallet_id' => $this->id,
-			'deposit_id' =>null,
-			'amount' =>$amount,
-			'type' => 'enter',
-		]);
-		
-		return $transaction;
-	}
-
+	/**
+     * Get the deposit for the wallet.
+     */
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+	
 }

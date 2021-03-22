@@ -13,8 +13,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    {{ __('You balance: ') }}{{ $user->wallet->balance }}
+					@if (!is_null($user->wallet))
+						{{ __('You balance: ') }}{{ $user->wallet->balance }}
+					@endif
                 </div>
             </div>
         </div>
